@@ -12,7 +12,3 @@ def make_shell_context():
 def inject_now():
     from datetime import date
     return {'now': date.today().strftime('%Y-%m-%d')}
-
-with app.app_context():
-    db.create_all()
-    print("✅ Database tables created.")

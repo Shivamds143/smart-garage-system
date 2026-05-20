@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}My Bookings{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="fas fa-calendar-check text-primary me-2"></i>My Bookings</h4>
+{% if bookings %}
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>#</th><th>Garage</th><th>Service</th><th>Vehicle</th><th>Date & Time</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td class="text-muted small">{{ b.id }}</td>
+                <td class="fw-semibold">{{ b.garage.name }}</td>
+                <td>{{ b.service.name }}</td>
+                <td>{{ b.vehicle.reg_number if b.vehicle else '—' }}</td>
+                <td><span class="fw-semibold">{{ b.booking_date.strftime('%d %b %Y') }}</span><br><small class="text-muted">{{ b.booking_time.strftime('%I:%M %p') }}</small></td>
+                <td>₹{{ b.total_amount or '—' }}</td>
+                <td><span class="badge badge-status-{{ b.status }} text-white">{{ b.status|upper }}</span></td>
+                <td>
+                    {% if b.status in ['pending','confirmed'] %}
+                    <form method="POST" action="{{ url_for('user.cancel_booking', booking_id=b.id) }}"
+                          onsubmit="return confirm('Cancel this booking?')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Cancel</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="fas fa-calendar-times fa-3x mb-3"></i>
+    <h5>No bookings yet</h5>
+    <a href="{{ url_for('user.garages') }}" class="btn btn-primary mt-2">Find a Garage</a>
+</div>
+{% endif %}
+{% endblock %}

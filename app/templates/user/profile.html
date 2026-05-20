@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-7">
+    <div class="card">
+        <div class="card-header bg-primary text-white fw-bold">
+            <i class="fas fa-user-cog me-2"></i>My Profile
+        </div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center text-white fw-bold"
+                     style="width:80px;height:80px;font-size:2rem;">
+                    {{ current_user.name[0].upper() }}
+                </div>
+                <h5 class="mt-2 mb-0">{{ current_user.name }}</h5>
+                <small class="text-muted">{{ current_user.email }}</small>
+                <span class="badge bg-warning text-dark ms-2">{{ current_user.role }}</span>
+            </div>
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ current_user.name }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Phone</label>
+                        <input type="tel" name="phone" class="form-control" value="{{ current_user.phone or '' }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Emergency Contact</label>
+                        <input type="text" name="emergency_contact" class="form-control"
+                               value="{{ current_user.emergency_contact or '' }}"
+                               placeholder="Name & phone of emergency contact">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Latitude <small class="text-muted">(auto-fill below)</small></label>
+                        <input type="number" step="any" name="latitude" id="lat" class="form-control"
+                               value="{{ current_user.latitude or '' }}" placeholder="19.0760">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Longitude</label>
+                        <input type="number" step="any" name="longitude" id="lon" class="form-control"
+                               value="{{ current_user.longitude or '' }}" placeholder="72.8777">
+                    </div>
+                    <div class="col-12">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="getMyLoc()">
+                            <i class="fas fa-crosshairs me-1"></i>Use My Current Location
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-4 fw-bold">
+                    <i class="fas fa-save me-2"></i>Save Profile
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function getMyLoc() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            document.getElementById('lat').value = pos.coords.latitude.toFixed(6);
+            document.getElementById('lon').value = pos.coords.longitude.toFixed(6);
+        });
+    }
+}
+</script>
+{% endblock %}

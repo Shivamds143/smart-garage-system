@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ garage.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('user.garages') }}" class="btn btn-outline-secondary btn-sm">← Back</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="fw-bold">{{ garage.name }}</h4>
+                <p class="text-muted">
+                    <i class="fas fa-map-marker-alt me-1"></i>{{ garage.address }}, {{ garage.city }}
+                </p>
+                <p>
+                    <i class="fas fa-phone me-1 text-primary"></i>{{ garage.phone or 'N/A' }}
+                    &nbsp;|&nbsp;
+                    <i class="fas fa-clock me-1 text-primary"></i>{{ garage.open_time }} - {{ garage.close_time }}
+                </p>
+                <div class="d-flex align-items-center">
+                    <span class="text-warning fs-5 me-1">
+                        {{ '★' * (garage.rating|int) }}{{ '☆' * (5 - garage.rating|int) }}
+                    </span>
+                    <span class="fw-bold me-1">{{ garage.rating }}</span>
+                    <small class="text-muted">/5.0</small>
+                </div>
+                {% if garage.description %}
+                <p class="mt-2 text-muted">{{ garage.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+
+    <!-- SERVICES -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="fas fa-tools me-2"></i>Available Services
+            </div>
+            <div class="list-group list-group-flush">
+                {% for s in services %}
+                <a href="#" class="list-group-item list-group-item-action service-item"
+                   data-id="{{ s.id }}" data-name="{{ s.name }}" data-price="{{ s.price }}"
+                   onclick="selectService(this); return false;">
+                    
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold">{{ s.name }}</span>
+                        <span class="badge bg-success">₹{{ s.price }}</span>
+                    </div>
+                    <small class="text-muted">
+                        {{ s.description or '' }} · ~{{ s.duration_minutes }} mins
+                    </small>
+                </a>
+                {% else %}
+                <div class="list-group-item text-center text-muted py-3">
+                    No services available
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING FORM -->
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-success text-white fw-bold">
+                <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+            </div>
+            <div class="card-body">
+
+                <!-- ✅ FORM -->
+                <form method="POST" action="{{ url_for('user.book_service') }}" onsubmit="return validateForm()">
+                    
+                    <input type="hidden" name="garage_id" value="{{ garage.id }}">
+                    <input type="hidden" name="service_id" id="serviceId">
+
+                    <!-- Selected Service -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Selected Service</label>
+                        <div id="selectedServiceInfo" class="alert alert-info py-2 small">
+                            Please select a service first 👈
+                        </div>
+                    </div>
+
+                    <!-- Vehicle -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Vehicle (optional)</label>
+                        <select name="vehicle_id" class="form-select">
+                            <option value="">-- Select Vehicle --</option>
+                            {% for v in vehicles %}
+                            <option value="{{ v.id }}">
+                                {{ v.reg_number }} - {{ v.make }} {{ v.model }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Date</label>
+                            <input type="date" name="booking_date" id="bookDate" class="form-control" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Time</label>
+                            <input type="time" name="booking_time"
+                                   class="form-control"
+                                   min="{{ garage.open_time }}"
+                                   max="{{ garage.close_time }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Notes</label>
+                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <!-- Button -->
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">
+                        <i class="fas fa-calendar-check me-2"></i>Confirm Booking
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+// Set minimum date = today
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('bookDate').setAttribute('min', today);
+
+// Select service
+function selectService(el) {
+    document.querySelectorAll('.service-item').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+
+    document.getElementById('serviceId').value = el.dataset.id;
+
+    document.getElementById('selectedServiceInfo').innerHTML =
+        `<strong>${el.dataset.name}</strong> — ₹${el.dataset.price}`;
+}
+
+// Validate form
+function validateForm() {
+    const serviceId = document.getElementById('serviceId').value;
+
+    if (!serviceId) {
+        alert("⚠️ Please select a service first!");
+        return false;
+    }
+
+    return true;
+}
+
+</script>
+{% endblock %}

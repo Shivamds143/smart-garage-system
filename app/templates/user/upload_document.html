@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Upload Document{% endblock %}
+{% block content %}
+<div class="mb-3"><a href="{{ url_for('user.documents') }}" class="btn btn-outline-secondary btn-sm">← Back</a></div>
+<div class="card mx-auto" style="max-width:500px;">
+    <div class="card-header bg-primary text-white fw-bold">
+        <i class="fas fa-file-upload me-2"></i>Upload Document
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Document Type *</label>
+                <select name="doc_type" class="form-select" required>
+                    <option value="">-- Select Type --</option>
+                    <option value="RC">RC (Registration Certificate)</option>
+                    <option value="Insurance">Insurance</option>
+                    <option value="License">Driving License</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Upload File *</label>
+                <input type="file" name="document" class="form-control" accept=".png,.jpg,.jpeg,.gif,.pdf" required>
+                <small class="text-muted">Allowed: PNG, JPG, GIF, PDF · Max 16MB</small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Expiry Date</label>
+                <input type="date" name="expiry_date" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Notes</label>
+                <input type="text" name="notes" class="form-control" placeholder="Optional note...">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold">
+                <i class="fas fa-cloud-upload-alt me-2"></i>Upload Document
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

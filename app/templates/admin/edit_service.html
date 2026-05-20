@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Edit Service{% endblock %}
+{% block content %}
+<div class="mb-3"><a href="{{ url_for('admin.services') }}" class="btn btn-outline-secondary btn-sm">← Back</a></div>
+<div class="card mx-auto" style="max-width:500px;">
+    <div class="card-header bg-warning fw-bold">
+        <i class="fas fa-edit me-2"></i>Edit Service
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Service Name *</label>
+                <input type="text" name="name" class="form-control" value="{{ service.name }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Description</label>
+                <textarea name="description" class="form-control" rows="2">{{ service.description or '' }}</textarea>
+            </div>
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Price (₹) *</label>
+                    <input type="number" name="price" class="form-control" value="{{ service.price }}" min="0" step="0.01" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Duration (mins)</label>
+                    <input type="number" name="duration" class="form-control" value="{{ service.duration_minutes }}" min="15" required>
+                </div>
+            </div>
+            <div class="form-check mt-3">
+                <input type="checkbox" name="is_available" class="form-check-input" id="avail"
+                       {% if service.is_available %}checked{% endif %}>
+                <label class="form-check-label fw-semibold" for="avail">Available for booking</label>
+            </div>
+            <button type="submit" class="btn btn-warning w-100 mt-4 fw-bold">
+                <i class="fas fa-save me-2"></i>Update Service
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

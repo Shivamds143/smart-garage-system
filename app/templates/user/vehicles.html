@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Vehicles{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold"><i class="fas fa-car text-primary me-2"></i>My Vehicles</h4>
+    <a href="{{ url_for('user.add_vehicle') }}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus me-1"></i>Add Vehicle
+    </a>
+</div>
+{% if vehicles %}
+<div class="row g-3">
+{% for v in vehicles %}
+<div class="col-md-6 col-lg-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+                <span class="fs-3 me-2">🚗</span>
+                <div>
+                    <h6 class="fw-bold mb-0">{{ v.make }} {{ v.model }}</h6>
+                    <span class="badge bg-primary">{{ v.reg_number }}</span>
+                </div>
+            </div>
+            <ul class="list-unstyled small text-muted mb-0">
+                {% if v.year %}<li><i class="fas fa-calendar me-1"></i>Year: {{ v.year }}</li>{% endif %}
+                {% if v.color %}<li><i class="fas fa-palette me-1"></i>Color: {{ v.color }}</li>{% endif %}
+                {% if v.insurance_number %}<li><i class="fas fa-shield-alt me-1"></i>Ins: {{ v.insurance_number }}</li>{% endif %}
+                {% if v.insurance_expiry %}
+                <li><i class="fas fa-clock me-1"></i>Expires: {{ v.insurance_expiry.strftime('%d %b %Y') }}
+                    {% if v.insurance_expiry < today %}<span class="badge bg-danger ms-1">Expired</span>{% endif %}
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="card-footer bg-transparent border-0">
+            <form method="POST" action="{{ url_for('user.delete_vehicle', vid=v.id) }}"
+                  onsubmit="return confirm('Remove this vehicle?')">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                    <i class="fas fa-trash me-1"></i>Remove
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="fas fa-car fa-3x mb-3"></i>
+    <h5>No vehicles added yet</h5>
+    <a href="{{ url_for('user.add_vehicle') }}" class="btn btn-primary mt-2">Add Vehicle</a>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>const today = new Date();</script>
+{% endblock %}

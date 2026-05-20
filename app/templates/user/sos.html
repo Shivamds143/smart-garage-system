@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}SOS Emergency{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-6">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white fw-bold text-center fs-5">
+            🚨 Emergency SOS Alert
+        </div>
+        <div class="card-body text-center">
+            <p class="text-muted mb-4">Press the SOS button to alert nearby garages and your emergency contact.<br>
+            Your location will be shared automatically.</p>
+
+            <div class="d-flex justify-content-center mb-4">
+                <button class="btn btn-danger sos-btn text-white fw-bold" id="sosMainBtn" onclick="sendSOS()">
+                    SOS
+                </button>
+            </div>
+
+            <form method="POST" id="sosForm">
+                <input type="hidden" name="latitude" id="sosLat" value="{{ current_user.latitude or 19.0760 }}">
+                <input type="hidden" name="longitude" id="sosLon" value="{{ current_user.longitude or 72.8777 }}">
+                <input type="hidden" name="address" id="sosAddr">
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-semibold">Emergency Message</label>
+                    <textarea name="message" class="form-control" rows="3"
+                        placeholder="Describe your emergency...">Vehicle breakdown! Need immediate assistance.</textarea>
+                </div>
+
+                <div id="locationStatus" class="alert alert-info py-2 small text-start" style="display:none;">
+                    <i class="fas fa-spinner fa-spin me-1"></i>Getting your location...
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 fw-bold py-2" id="confirmSosBtn" style="display:none;">
+                    <i class="fas fa-paper-plane me-2"></i>Confirm & Send SOS
+                </button>
+            </form>
+
+            <hr>
+            <div class="text-start">
+                <h6 class="fw-bold">What happens next?</h6>
+                <ul class="small text-muted">
+                    <li>Nearest garage is notified with your location</li>
+                    <li>Emergency contact receives an alert</li>
+                    <li>Garage admin will see your SOS in their dashboard</li>
+                </ul>
+            </div>
+            {% if current_user.emergency_contact %}
+            <div class="alert alert-success py-2 small text-start">
+                <i class="fas fa-phone me-1"></i>Emergency Contact: <strong>{{ current_user.emergency_contact }}</strong>
+            </div>
+            {% else %}
+            <div class="alert alert-warning py-2 small text-start">
+                <i class="fas fa-exclamation-circle me-1"></i>No emergency contact set.
+                <a href="{{ url_for('user.profile') }}">Add one in Profile →</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function sendSOS() {
+    document.getElementById('locationStatus').style.display = 'block';
+    document.getElementById('confirmSosBtn').style.display = 'block';
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            document.getElementById('sosLat').value = pos.coords.latitude;
+            document.getElementById('sosLon').value = pos.coords.longitude;
+            document.getElementById('locationStatus').innerHTML =
+                '<i class="fas fa-check-circle text-success me-1"></i>Location captured! Click "Confirm & Send SOS"';
+            document.getElementById('locationStatus').className = 'alert alert-success py-2 small text-start';
+        }, function() {
+            document.getElementById('locationStatus').innerHTML =
+                '<i class="fas fa-map-marker-alt me-1"></i>Using last known location.';
+        });
+    }
+}
+</script>
+{% endblock %}

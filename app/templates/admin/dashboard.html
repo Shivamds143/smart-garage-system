@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">🏪 {{ garage.name }}</h4>
+        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ garage.address }}, {{ garage.city }}</small>
+    </div>
+    <a href="{{ url_for('admin.garage_profile') }}" class="btn btn-outline-primary btn-sm">
+        <i class="fas fa-edit me-1"></i>Edit Profile
+    </a>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card p-3 text-center" style="border-left:5px solid #1a73e8;">
+            <div class="fw-bold fs-2 text-primary">{{ total_bookings }}</div>
+            <small class="text-muted">Total Bookings</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 text-center" style="border-left:5px solid #ff9800;">
+            <div class="fw-bold fs-2" style="color:#ff9800;">{{ pending }}</div>
+            <small class="text-muted">Pending</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 text-center" style="border-left:5px solid #43a047;">
+            <div class="fw-bold fs-2 text-success">{{ confirmed }}</div>
+            <small class="text-muted">Confirmed</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card p-3 text-center" style="border-left:5px solid #e53935;">
+            <div class="fw-bold fs-2 text-danger">{{ sos_count }}</div>
+            <small class="text-muted">Active SOS</small>
+            {% if sos_count > 0 %}<div><a href="{{ url_for('admin.sos_alerts') }}" class="badge bg-danger text-decoration-none">View Alerts</a></div>{% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings -->
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="fas fa-calendar me-2"></i>Recent Bookings</span>
+        <a href="{{ url_for('admin.bookings') }}" class="btn btn-light btn-sm">View All</a>
+    </div>
+    <div class="card-body p-0">
+        {% if recent_bookings %}
+        <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Customer</th><th>Service</th><th>Date</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            {% for b in recent_bookings %}
+            <tr>
+                <td class="fw-semibold">{{ b.user.name }}<br><small class="text-muted">{{ b.user.phone or '' }}</small></td>
+                <td>{{ b.service.name }}</td>
+                <td>{{ b.booking_date.strftime('%d %b %Y') }}<br><small class="text-muted">{{ b.booking_time.strftime('%I:%M %p') }}</small></td>
+                <td>₹{{ b.total_amount or '—' }}</td>
+                <td><span class="badge badge-status-{{ b.status }} text-white">{{ b.status|upper }}</span></td>
+                <td>
+                    {% if b.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('admin.update_booking', bid=b.id, status='confirmed') }}" class="d-inline">
+                        <button class="btn btn-success btn-sm">✓</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.update_booking', bid=b.id, status='rejected') }}" class="d-inline">
+                        <button class="btn btn-danger btn-sm">✗</button>
+                    </form>
+                    {% elif b.status == 'confirmed' %}
+                    <form method="POST" action="{{ url_for('admin.update_booking', bid=b.id, status='completed') }}" class="d-inline">
+                        <button class="btn btn-primary btn-sm">Done</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4 text-muted">
+            <i class="fas fa-calendar-times fa-2x mb-2"></i><br>No bookings yet.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

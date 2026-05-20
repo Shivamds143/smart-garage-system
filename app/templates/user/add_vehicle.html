@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Add Vehicle{% endblock %}
+{% block content %}
+<div class="mb-3"><a href="{{ url_for('user.vehicles') }}" class="btn btn-outline-secondary btn-sm">← Back</a></div>
+<div class="card mx-auto" style="max-width:560px;">
+    <div class="card-header bg-primary text-white fw-bold">
+        <i class="fas fa-car me-2"></i>Add New Vehicle
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Registration Number *</label>
+                    <input type="text" name="reg_number" class="form-control text-uppercase" placeholder="MH12AB1234" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Make / Brand *</label>
+                    <input type="text" name="make" class="form-control" placeholder="Maruti, Honda..." required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Model *</label>
+                    <input type="text" name="model" class="form-control" placeholder="Swift, City..." required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Year</label>
+                    <input type="number" name="year" class="form-control" placeholder="2020" min="1990" max="2026">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Color</label>
+                    <input type="text" name="color" class="form-control" placeholder="Red">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Insurance Number</label>
+                    <input type="text" name="insurance_number" class="form-control" placeholder="INS123456">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Insurance Expiry</label>
+                    <input type="date" name="insurance_expiry" class="form-control">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-4 fw-bold">
+                <i class="fas fa-plus-circle me-2"></i>Add Vehicle
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

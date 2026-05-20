@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Find Garages{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold"><i class="fas fa-map-marker-alt text-primary me-2"></i>Nearby Garages</h4>
+    <button class="btn btn-outline-primary btn-sm" id="locBtn">
+        <i class="fas fa-crosshairs me-1"></i>Use My Location
+    </button>
+</div>
+<div class="row g-3">
+{% for item in garages %}
+{% set g = item.garage %}
+<div class="col-md-6 col-lg-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <h6 class="fw-bold mb-1">{{ g.name }}</h6>
+                <span class="badge bg-success">{{ item.distance }} km</span>
+            </div>
+            <p class="text-muted small mb-1"><i class="fas fa-map-marker-alt me-1"></i>{{ g.address }}, {{ g.city }}</p>
+            <p class="text-muted small mb-1"><i class="fas fa-phone me-1"></i>{{ g.phone or 'N/A' }}</p>
+            <div class="d-flex align-items-center mb-2">
+                <span class="text-warning me-1">{{ '★' * (g.rating|int) }}{{ '☆' * (5 - g.rating|int) }}</span>
+                <small class="text-muted">({{ g.rating }}/5.0)</small>
+            </div>
+            <p class="small mb-2"><i class="fas fa-clock me-1 text-muted"></i>{{ g.open_time }} - {{ g.close_time }}</p>
+            {% if g.services %}
+            <div class="mb-2">
+                {% for s in g.services[:3] %}
+                <span class="badge bg-light text-dark border me-1 mb-1">{{ s.name }}</span>
+                {% endfor %}
+                {% if g.services|length > 3 %}<span class="badge bg-secondary">+{{ g.services|length - 3 }} more</span>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer bg-transparent border-0">
+            <a href="{{ url_for('user.garage_detail', garage_id=g.id) }}" class="btn btn-primary btn-sm w-100">
+                <i class="fas fa-calendar-plus me-1"></i>Book Service
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-12 text-center py-5 text-muted">
+    <i class="fas fa-warehouse fa-3x mb-3"></i>
+    <p>No garages found. Check back soon!</p>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('locBtn').onclick = function() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            const lat = pos.coords.latitude, lon = pos.coords.longitude;
+            window.location.href = `{{ url_for('user.garages') }}?lat=${lat}&lon=${lon}`;
+        }, function() { alert('Could not get location. Please allow location access.'); });
+    } else { alert('Geolocation not supported.'); }
+};
+</script>
+{% endblock %}

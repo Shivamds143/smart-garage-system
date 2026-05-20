@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Garage Profile{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-4"><i class="fas fa-warehouse text-primary me-2"></i>Garage Profile</h4>
+<div class="card mx-auto" style="max-width:680px;">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Garage Name *</label>
+                    <input type="text" name="name" class="form-control" value="{{ garage.name if garage else '' }}" required>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Address *</label>
+                    <input type="text" name="address" class="form-control" value="{{ garage.address if garage else '' }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">City *</label>
+                    <input type="text" name="city" class="form-control" value="{{ garage.city if garage else '' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Phone</label>
+                    <input type="tel" name="phone" class="form-control" value="{{ garage.phone if garage else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ garage.email if garage else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Opening Time</label>
+                    <input type="time" name="open_time" class="form-control" value="{{ garage.open_time if garage else '09:00' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Closing Time</label>
+                    <input type="time" name="close_time" class="form-control" value="{{ garage.close_time if garage else '20:00' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Latitude</label>
+                    <input type="number" step="any" name="latitude" id="lat" class="form-control"
+                           value="{{ garage.latitude if garage else '' }}" placeholder="19.0760">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Longitude</label>
+                    <input type="number" step="any" name="longitude" id="lon" class="form-control"
+                           value="{{ garage.longitude if garage else '' }}" placeholder="72.8777">
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-outline-secondary btn-sm mb-2" onclick="getMyLoc()">
+                        <i class="fas fa-crosshairs me-1"></i>Use My Current Location
+                    </button>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Description</label>
+                    <textarea name="description" class="form-control" rows="3"
+                              placeholder="Tell customers about your garage...">{{ garage.description if garage else '' }}</textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-4 fw-bold">
+                <i class="fas fa-save me-2"></i>Save Garage Profile
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function getMyLoc() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            document.getElementById('lat').value = pos.coords.latitude.toFixed(6);
+            document.getElementById('lon').value = pos.coords.longitude.toFixed(6);
+        });
+    }
+}
+</script>
+{% endblock %}

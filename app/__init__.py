@@ -22,7 +22,14 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
 
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    # Create upload folder safely
+    upload_folder = app.config['UPLOAD_FOLDER']
+
+    if not os.path.exists(upload_folder):
+        try:
+            os.makedirs(upload_folder)
+        except OSError:
+            pass
 
     from app.routes.auth import auth_bp
     from app.routes.user import user_bp
